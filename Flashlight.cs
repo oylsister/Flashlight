@@ -96,7 +96,7 @@ public class Flashlight : BasePlugin
 
         var buttons = client.PlayerPawn.Value!.MovementServices!.Buttons.ButtonStates;
 
-        if (buttons[0] == IN_LOOKATWEAPON && buttons[1] == IN_LOOKATWEAPON)
+        if ((buttons[0] & IN_LOOKATWEAPON) != 0 && (buttons[1] & IN_LOOKATWEAPON) != 0)
             ToggleFlashlight(client);
 
         return HookResult.Continue;
