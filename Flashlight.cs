@@ -114,7 +114,6 @@ public class Flashlight : BasePlugin
         {
             if (_flashlightList[client] != null && (_flashlightList[client]?.IsValid ?? false))
             {
-
                 _flashlightList[client]?.AcceptInput("Kill");
                 _flashlightList[client] = null;
             }
@@ -190,7 +189,7 @@ public class Flashlight : BasePlugin
         
         CEntityKeyValues kv = new CEntityKeyValues();
 
-        kv.SetString("lightcookie" ,"materials/effects/lightcookies/flashlight.vtex");
+        kv.SetString("lightcookie", "materials/effects/lightcookies/flashlight.vtex");
 
         light.DispatchSpawn(kv);
 
@@ -223,7 +222,7 @@ public class Flashlight : BasePlugin
             return;
         }
 
-        if (light == null)
+        if (light == null || !light.IsValid)
         {
             SpawnFlashlight(client);
             return;
