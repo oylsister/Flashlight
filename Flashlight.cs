@@ -103,6 +103,25 @@ public class Flashlight : BasePlugin
     }
 
     [GameEventHandler]
+    public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
+    {
+        AddTimer(0.2f, () => {
+            foreach(var client in Utilities.GetPlayers())
+            {
+                if(_flashlightList?.ContainsKey(client) ?? false)
+                {
+                    if (_flashlightList[client] != null && (_flashlightList[client]?.IsValid ?? false))
+                    {
+                        _flashlightList[client]?.AcceptInput("Kill");
+                        _flashlightList[client] = null;
+                    }
+                }
+            }
+        });
+        return HookResult.Continue;
+    }
+
+    [GameEventHandler]
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
     {
         var client = @event.Userid;
@@ -146,18 +165,27 @@ public class Flashlight : BasePlugin
     public void SpawnFlashlight(CCSPlayerController client)
     {
         if(client == null)
+        {
+            //Server.PrintToChatAll("Client is null");
             return;
+        }
 
         if(!_flashlightList?.ContainsKey(client) ?? false)
             _flashlightList?.TryAdd(client, null);
 
-        if (_flashlightList?[client] != null)
+        if (_flashlightList?[client] != null && (_flashlightList[client]?.IsValid ?? false))
+        {
+            //client.PrintToChat("It's not null and it's valid");
             return;
+        }
 
         var pawn = client.PlayerPawn.Value;
 
         if(pawn == null)
+        {
+            //client.PrintToChat("Pawn is null");
             return;
+        }
 
         Vector pos = new(pawn.AbsOrigin!.X, pawn.AbsOrigin.Y, pawn.AbsOrigin.Z);
         Vector forward = new(), right = new(), up = new();
@@ -170,7 +198,10 @@ public class Flashlight : BasePlugin
         var light = Utilities.CreateEntityByName<CBarnLight>("light_barn");
 
         if(light == null)
+        {
+            //client.PrintToChat("Light it's null");
             return;
+        }
 
         light.Enabled = true;
         light.Color = Color.White;
@@ -218,12 +249,14 @@ public class Flashlight : BasePlugin
 
         if (!found)
         {
+            //client.PrintToChat("Not found");
             SpawnFlashlight(client);
             return;
         }
 
         if (light == null || !light.IsValid)
         {
+            //client.PrintToChat("It's null or invalid");
             SpawnFlashlight(client);
             return;
         }
